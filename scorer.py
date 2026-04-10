@@ -1,7 +1,6 @@
 import json
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Tuple
-#addded asdict
 
 
 # -----------------------------
@@ -451,14 +450,6 @@ def print_result(result: RiskEvaluationResult) -> None:
 
 
 # -----------------------------
-# save to json file function
-# -----------------------------
-
-def result_to_json(result: RiskEvaluationResult) -> Dict[str, Any]:
-    return asdict(result)
-
-
-# -----------------------------
 # Example main
 # -----------------------------
 
@@ -471,9 +462,6 @@ if __name__ == "__main__":
         engine = ComplianceScoringEngine()
         result = engine.evaluate_packet(packet)
         print_result(result)
-
-        json_output = result_to_json(result)
-        #print(json_output)
 
     except FileNotFoundError:
         print(f"Error: could not find file '{file_path}'.")
