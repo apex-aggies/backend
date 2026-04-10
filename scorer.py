@@ -454,13 +454,8 @@ def print_result(result: RiskEvaluationResult) -> None:
 # save to json file function
 # -----------------------------
 
-def save_result_json(result: RiskEvaluationResult, output_path: str) -> None:
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(asdict(result), f, indent=2)
-
-
-def result_to_dict(result: RiskEvaluationResult) -> Dict[str, Any]:
-    return asdict(result) 
+def result_to_json(result: RiskEvaluationResult) -> Dict[str, Any]:
+    return asdict(result)
 
 
 # -----------------------------
@@ -470,15 +465,15 @@ def result_to_dict(result: RiskEvaluationResult) -> Dict[str, Any]:
 if __name__ == "__main__":
     # Replace this with one of your test files later
     file_path = "sample_packet.json"
-    output_file_path = "scoring_result.json"
 
     try:
         packet = load_json_file(file_path)
         engine = ComplianceScoringEngine()
         result = engine.evaluate_packet(packet)
         print_result(result)
-        save_result_json(result, output_file_path)
-        print(f"Saved result to {output_file_path}")
+
+        json_output = result_to_json(result)
+        #print(json_output)
 
     except FileNotFoundError:
         print(f"Error: could not find file '{file_path}'.")
