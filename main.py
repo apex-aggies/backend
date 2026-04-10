@@ -1,4 +1,6 @@
 # Main API source
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -82,3 +84,43 @@ async def evaluate_resume_packet(payload: AuditPayload):
     
     # Return the dataclass directly; FastAPI will convert it to JSON
     return result
+
+INCOMING_DIR = Path("incoming")
+@app.get("/api/test-data")
+async def fetch_in_memory_test_data():
+    """
+    Reads all JSON files in incoming/, scores them in memory, 
+    and returns the results without mutating the file system.
+    """
+    if not INCOMING_DIR.exists():
+        return {"status": "success", "count": 0, "data": []}
+
+    # Find all JSON files
+    json_files = sorted(INCOMING_DIR.glob("*.json"))
+    results = []
+
+    for file_path in json_files:
+        try:
+            # 1. Load the raw JSON from disk
+            packet = load_json_file(str(file_path))
+            
+            # 2. Score it in memory
+            evaluation = engine.evaluate_packet(packet)
+            
+            # 3. Attach the filename so the frontend knows which is which
+            # We convert the dataclass to a dict so we can inject the filename
+            evaluation_dict = evaluation.__dict__.copy()
+            evaluation_dict["source_file"] = file_path.name
+            
+            results.append(evaluation_dict)
+            
+        except Exception as e:
+            # If one file is corrupted, print it but don't crash the whole API
+            print(f"Skipping {file_path.name} due to error: {e}")
+
+    # Return the aggregated data
+    return {
+        "status": "success",
+        "count": len(results),
+        "data": results
+    }
