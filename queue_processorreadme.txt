@@ -1,4 +1,4 @@
-﻿The following document describes how queu_processor.py automates .json file input into scorer.py.
+﻿The following document describes how queue_processor.py automates .json file input into scorer.py.
 
 
 Instead of manually passing files into scorer.py one-by-one, the
